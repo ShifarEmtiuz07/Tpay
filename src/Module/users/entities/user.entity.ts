@@ -9,8 +9,8 @@ export class User {
   @Column({ unique: true })
   walletAddress: string;
 
-@Column({  type: 'text',nullable: true })
-nonce: string | null;;
+// @Column({  type: 'text',nullable: true })
+// nonce: string | null;;
 
   @CreateDateColumn()
   createdAt: Date;

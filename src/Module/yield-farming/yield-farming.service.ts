@@ -15,7 +15,24 @@ export class YieldFarmingService {
     @InjectRepository(YieldFarming) private farmRepo: Repository<YieldFarming>,
   ) {}
 
+  async createFarm(createYieldFarmingDto: CreateYieldFarmingDto) {
+
+  try{
+        const existingFarm = await this.farmRepo.findOne({ where: { lpTokenAddress: createYieldFarmingDto.lpTokenAddress } });
+    if (existingFarm) throw new NotFoundException('Farm with this LP token address already exists');
+
+    const farm = this.farmRepo.create(createYieldFarmingDto);
+    return this.farmRepo.save(farm);
+
+  } catch (error) {
+    throw new NotFoundException('Error creating farm: ' + error.message); 
+  }
+
+  }
+
   async stake(user: User, farmId: string, amount: number) {
+  try{
+
     const farm = await this.farmRepo.findOne({ where: { id: farmId } });
     if (!farm) throw new NotFoundException('Farm not found');
 
@@ -29,9 +46,17 @@ export class YieldFarmingService {
       feeReward: 0,
     });
     return this.stakeRepo.save(stake);
+
+  }catch(error) {
+    throw new NotFoundException('Error staking: ' + error.message);
   }
 
+}
+
   async claim(user: User, stakeId: string) {
+
+    try{
+
     const stake = await this.stakeRepo.findOne({ where: { id: stakeId }, relations: ['farm', 'user'] });
     if (!stake || stake.user.id !== user.id) throw new NotFoundException('Stake not found');
 
@@ -47,17 +72,33 @@ export class YieldFarmingService {
     await this.stakeRepo.save(stake);
 
     return { tpayReward: totalTPAY, tradingFeeReward: totalFees };
+
+    }catch (error) {
+      throw new NotFoundException('Error claiming rewards: ' + error.message);
+    }
+
   }
 
   async addFeeReward(stakeId: string, feeAmount: number) {
-    const stake = await this.stakeRepo.findOne({ where: { id: stakeId } });
+
+    try{
+          const stake = await this.stakeRepo.findOne({ where: { id: stakeId } });
     if (stake) {
       stake.feeReward += feeAmount;
       await this.stakeRepo.save(stake);
     }
+    }catch (error) {
+      throw new NotFoundException('Error adding fee reward: ' + error.message);
+    }
+
   }
 
   async farms() {
-    return this.farmRepo.find();
+    try{
+       return this.farmRepo.find();
+    }catch (error) {
+      throw new NotFoundException('Error fetching farms: ' + error.message);
+    }
+   
   }
 }

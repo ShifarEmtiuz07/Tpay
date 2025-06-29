@@ -88,7 +88,11 @@ export class LiquidityPoolManagementService {
     return { withdrawn: { amountA, amountB } };
   }
 
-  async findAll() {
+  async findAllPool() {
     return this.poolRepo.find();
+  }
+
+    async findAllLiquidity() {
+    return this.liquidityRepo.find();
   }
 }

@@ -1,4 +1,5 @@
-const { Wallet } = require('ethers');
+//const { Wallet } = require('ethers');
+import { Wallet } from 'ethers';
 
 // ⚠️ Replace with your test MetaMask private key
 const privateKey = '1ec725c345371801f811e09f868e98c6c9683dbea15184c9bd71b07bdc8798d4'; 
@@ -11,11 +12,17 @@ const walletAddress = '0x0650ecDcE71157B9C73ef3eD9d9c7EaDcf8aEb94';
 
 const wallet = new Wallet(privateKey);
 
-async function main() {
-  const signature = await wallet.signMessage('Login to Tpay at 2025-06-28T15:40:05.950Z');
-  console.log('Wallet Address:', walletAddress);
-  console.log('Nonce:', nonce);
-  console.log('Signature:', signature);
+export async function signFunc() {
+  const signature = await wallet.signMessage(nonce);
+  // console.log('Wallet Address:', walletAddress);
+  // console.log('Nonce:', nonce);
+  // console.log('Signature:', signature);
+
+  return {
+    walletAddress,
+    nonce,
+    signature
+  };
 }
 
-main();
+//main();

@@ -8,6 +8,11 @@ import { StakeDto } from './dto/stake.dto';
 export class YieldFarmingController {
   constructor(private readonly farmingService: YieldFarmingService) {}
 
+  @Post('farm')
+createFarm(@Body() body: CreateYieldFarmingDto) {
+  return this.farmingService.createFarm(body);
+}
+
    @Post('stake/:farmId')
   stake(@Param('farmId') farmId: string, @Body() body: StakeDto, @Request() req) {
     return this.farmingService.stake(req.user, farmId, body.amount);

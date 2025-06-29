@@ -10,11 +10,11 @@ export class AuthController {
 
   @Post('wallet-login')
   async walletLogin(@Body() dto: CreateAuthDto) {
-    return this.authService.login(dto.walletAddress, dto.signature);
+    return this.authService.login(dto.walletAddress);
   }
 
-  @Get('nonce/:walletAddress')
-async getNonce(@Param('walletAddress') walletAddress: string) {
-  return this.authService.generateNonce(walletAddress);
-}
+//   @Get('nonce/:walletAddress')
+// async getNonce(@Param('walletAddress') walletAddress: string) {
+//   return this.authService.generateNonce(walletAddress);
+// }
 }

@@ -4,11 +4,11 @@ export class CreateAuthDto {
   @IsString()
   walletAddress: string;
 
-  @IsNotEmpty()
-  @IsString()
-  signature: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // signature: string;
 
-  @IsNotEmpty()
-  @IsString()
-  nonce: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // nonce: string;
 }

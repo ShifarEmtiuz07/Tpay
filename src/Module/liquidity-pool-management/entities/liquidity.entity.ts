@@ -9,8 +9,7 @@ export class Liquidity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Pool, (pool) => pool.liquidity)
-  pool: Pool;
+
 
   @ManyToOne(() => User)
   user: User;
@@ -23,4 +22,7 @@ export class Liquidity {
 
   @Column({ type: 'decimal', precision: 30, scale: 10 })
   share: number;
+
+  @ManyToOne(() => Pool, (pool) => pool.liquidity)
+  pool: Pool;
 }

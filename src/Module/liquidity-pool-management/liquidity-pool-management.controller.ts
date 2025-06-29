@@ -5,7 +5,7 @@ import { RemoveLiquidityDto } from './dto/remove-liquidity.dto';
 import { AddLiquidityDto } from './dto/add-liquidity.dto';
 
 
-@Controller('liquidity-pool-management')
+@Controller('liquidity-pool')
 export class LiquidityPoolManagementController {
   constructor(private readonly liquidityPoolManagementService: LiquidityPoolManagementService) {}
 
@@ -26,8 +26,13 @@ export class LiquidityPoolManagementController {
     return this.liquidityPoolManagementService.removeLiquidity(dto, req.user);
   }
 
-  @Get()
-  findAll() {
-    return this.liquidityPoolManagementService.findAll();
+  @Get('all-pools')
+  findAllPools() {
+    return this.liquidityPoolManagementService.findAllPool();
+  }
+
+    @Get('all-liquidities')
+  findAllLiquidities() {
+    return this.liquidityPoolManagementService.findAllLiquidity();
   }
 }
