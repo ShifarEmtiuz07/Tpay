@@ -12,25 +12,20 @@ import { RemoveLiquidityDto } from './dto/remove-liquidity.dto';
 import { Pool } from './entities/pool.entity';
 import { Liquidity } from './entities/liquidity.entity';
 import { User } from '../users/entities/user.entity';
+import { Token } from '../token-management/entities/token-management.entity';
 
 @Injectable()
 export class LiquidityPoolManagementService {
   constructor(
     @InjectRepository(Pool) private poolRepo: Repository<Pool>,
     @InjectRepository(Liquidity) private liquidityRepo: Repository<Liquidity>,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Token) private readonly tokenRepository: Repository<Token>,
   ) {}
 
   async createPool(dto: CreatePoolDto) {
-    // const { tokenA, tokenB, reserveA, reserveB } = dto;
-    // const pool = this.poolRepo.create({
-    //   tokenA,
-    //   tokenB,
-    //   reserveA,
-    //   reserveB,
-    //   totalShares: 1000,
-    // });
     try{
-        const pool= await this.poolRepo.create({...dto, totalShares: 1000})
+    const pool= await this.poolRepo.create({...dto, totalShares: 1000})
     return this.poolRepo.save(pool);
 
     }catch(error){
@@ -39,24 +34,66 @@ export class LiquidityPoolManagementService {
   
   }
 
-  async addLiquidity(dto: AddLiquidityDto, user: User) {
+  async addLiquidity(dto: AddLiquidityDto, reqUser: User) {
+
+     const user = await this.userRepository.findOne({ where: { walletAddress: reqUser.walletAddress },relations:['tokens'] });
+           
+        if (!user) {
+          throw new NotFoundException('User does not exists');
+        }
+      //return user;
+     // console.log(user);
+    
     const pool = await this.poolRepo.findOne({ where: { id: dto.poolId } });
     if (!pool) throw new NotFoundException('Pool not found');
 
+
+  const amountA = Number(dto.amountA);
+  const amountB = Number(dto.amountB);
+  let reserveA = Number(pool.reserveA);
+  let reserveB = Number(pool.reserveB);
+  let totalShares = Number(pool.totalShares);
+
     // Calculate share
-    const share = (dto.amountA / pool.reserveA) * pool.totalShares;
+    const share:number = (amountA / reserveA) * totalShares;
 
-    pool.reserveA += dto.amountA;
-    pool.reserveB += dto.amountB;
-    pool.totalShares += share;
+    reserveA += amountA;
+    reserveB += amountB;
+    totalShares += share;
 
-    await this.poolRepo.save(pool);
+    pool.reserveA = reserveA;
+    pool.reserveB = reserveB;
+    pool.totalShares = totalShares;
+
+    // console.log(pool.reserveA);
+    // console.log( pool.reserveB);
+
+    
+
+   const savedPool= await this.poolRepo.save(pool);
+   console.log(savedPool);
+
+    const tokens=await this.tokenRepository.find({where: {walletAddress:user.walletAddress}});
+    if (!tokens || tokens.length === 0) {
+      throw new NotFoundException('No tokens found for the user');
+    }
+
+    for (const token of tokens) {
+      token.totalSupply = Number(token.totalSupply);
+      if(token.slug=='amountA'){
+        token.totalSupply-= amountA;
+      }else{
+         token.totalSupply-= amountB;
+      }
+    }
+
+    await this.tokenRepository.save(tokens);
 
     const liquidity = this.liquidityRepo.create({
       pool,
       user,
-      amountA: dto.amountA,
-      amountB: dto.amountB,
+      amountA: amountA,
+      amountB: amountB,
       share,
     });
 

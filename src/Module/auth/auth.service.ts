@@ -7,7 +7,7 @@ import { UsersService } from '../users/users.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
-import { signFunc } from '../../../sign-login.js'; // Adjust the path as needed
+import { signFunc } from '../../../connect-metamask-account/sign-login.js'; // Adjust the path as needed
 // declare global {
 //   interface Window {
 //     ethereum?: any;

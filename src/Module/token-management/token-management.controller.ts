@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Req } from '@nestjs/common';
 import { TokenManagementService } from './token-management.service';
 import { CreateTokenDto } from './dto/create-token-management.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 
 
@@ -11,10 +12,11 @@ export class TokenManagementController {
 
 
 
+  @UseGuards(AuthGuard)
   @Post()
-  async create(@Body() dto: CreateTokenDto) {
+  async create(@Body() dto: CreateTokenDto, @Req() req: any) {
     //console.log('Creating token with controller:', dto);
-    return this.tokenManagementService.create(dto);
+    return this.tokenManagementService.create(dto,req.user);
   }
 
   @Get()

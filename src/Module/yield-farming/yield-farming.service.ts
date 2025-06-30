@@ -13,6 +13,7 @@ export class YieldFarmingService {
     constructor(
     @InjectRepository(Stake) private stakeRepo: Repository<Stake>,
     @InjectRepository(YieldFarming) private farmRepo: Repository<YieldFarming>,
+        @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
   async createFarm(createYieldFarmingDto: CreateYieldFarmingDto) {
@@ -30,22 +31,27 @@ export class YieldFarmingService {
 
   }
 
-  async stake(user: User, farmId: string, amount: number) {
+  async stake(reqUser: User, farmId: string, amount: number) {
   try{
 
+     const user= await this.userRepository.findOne({ where: { walletAddress:reqUser.walletAddress } });
+       if (!user) throw new NotFoundException('User not found');
     const farm = await this.farmRepo.findOne({ where: { id: farmId } });
+    //console.log('Farm found:', farm);
     if (!farm) throw new NotFoundException('Farm not found');
 
     const now = new Date();
-    const stake = this.stakeRepo.create({
-      user,
-      yieldFarming: farm,
+    const stake =await this.stakeRepo.create({
+ 
       amount,
       stakeTime: now,
       lastClaimedTime: now,
       feeReward: 0,
+      user,
+      yieldFarming: farm,
     });
-    return this.stakeRepo.save(stake);
+    console.log('Stake created:', stake);
+    return await this.stakeRepo.save(stake);
 
   }catch(error) {
     throw new NotFoundException('Error staking: ' + error.message);
@@ -53,11 +59,18 @@ export class YieldFarmingService {
 
 }
 
-  async claim(user: User, stakeId: string) {
+  async claim(reqUser: User, stakeId: string) {
 
     try{
 
-    const stake = await this.stakeRepo.findOne({ where: { id: stakeId }, relations: ['farm', 'user'] });
+      const user = await this.userRepository.findOne({ where: { walletAddress: reqUser.walletAddress } });
+       
+    if (!user) {
+      throw new NotFoundException('User does not exists');
+    }
+
+    const stake = await this.stakeRepo.findOne({ where: { id: stakeId },relations: ['yieldFarming', 'user'] }); //relations: ['yieldFarming', 'user']
+    
     if (!stake || stake.user.id !== user.id) throw new NotFoundException('Stake not found');
 
     const now = new Date();
@@ -82,11 +95,25 @@ export class YieldFarmingService {
   async addFeeReward(stakeId: string, feeAmount: number) {
 
     try{
+
+        let feeAmounts= Number(feeAmount);
           const stake = await this.stakeRepo.findOne({ where: { id: stakeId } });
-    if (stake) {
-      stake.feeReward += feeAmount;
-      await this.stakeRepo.save(stake);
+           if (!stake) {
+      throw new NotFoundException('Stake not found');
+
     }
+    
+    //console.log('Adding fee reward:', feeAmount, 'to stake:', stakeId);
+
+    let stakeFeeReward=Number(stake.feeReward);
+
+ 
+ 
+    stakeFeeReward+=feeAmounts;
+      stake.feeReward = stakeFeeReward;
+    const savedStake=  await this.stakeRepo.save(stake);
+ 
+    
     }catch (error) {
       throw new NotFoundException('Error adding fee reward: ' + error.message);
     }

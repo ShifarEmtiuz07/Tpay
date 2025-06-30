@@ -3,6 +3,7 @@ import { LiquidityPoolManagementService } from './liquidity-pool-management.serv
 import { CreatePoolDto } from './dto/create-pool.dto';
 import { RemoveLiquidityDto } from './dto/remove-liquidity.dto';
 import { AddLiquidityDto } from './dto/add-liquidity.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 
 @Controller('liquidity-pool')
@@ -14,13 +15,13 @@ export class LiquidityPoolManagementController {
     return this.liquidityPoolManagementService.createPool(dto);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Post('add')
   add(@Body() dto: AddLiquidityDto, @Request() req) {
     return this.liquidityPoolManagementService.addLiquidity(dto, req.user);
   }
 
-  // @UseGuards(JwtAuthGuard)
+@UseGuards(AuthGuard)
   @Post('remove')
   remove(@Body() dto: RemoveLiquidityDto, @Request() req) {
     return this.liquidityPoolManagementService.removeLiquidity(dto, req.user);

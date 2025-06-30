@@ -1,15 +1,19 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { User } from 'src/Module/users/entities/user.entity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
 
 @Entity('tokens')
 export class Token {
     @PrimaryGeneratedColumn()
   id: string;
 
-  @Column({ unique: true })
-  address: string;
+  @Column()
+  walletAddress: string;
 
   @Column()
   name: string;
+
+  @Column({nullable: true})
+  slug: string;
 
   @Column()
   symbol: string;
@@ -25,4 +29,7 @@ export class Token {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToOne(()=> User, user => user.tokens, { nullable: true ,onDelete: 'SET NULL' })
+  user: User;
 }

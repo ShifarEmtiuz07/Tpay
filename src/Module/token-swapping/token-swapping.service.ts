@@ -19,14 +19,18 @@ export class TokenSwappingService {
     @InjectRepository(TokenSwapping) private swapRepo: Repository<TokenSwapping>,
     @InjectRepository(Pool) private poolRepo: Repository<Pool>,
       @InjectRepository(Stake) private stakeRepo: Repository<Stake>,
+         @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly yieldFarmingService: YieldFarmingService,
   ) {}
 
-async swap(dto: SwapTokensDto, user: User) {
+async swap(dto: SwapTokensDto, reqUser: User) {
     const { poolId, fromToken, amount } = dto;
 
     const pool = await this.poolRepo.findOne({ where: { id: poolId } });
     if (!pool) throw new NotFoundException('Pool not found');
+
+      const user= await this.userRepository.findOne({ where: { walletAddress:reqUser.walletAddress } });
+       if (!user) throw new NotFoundException('User not found');
 
     let inputReserve, outputReserve;
 
@@ -55,6 +59,7 @@ async swap(dto: SwapTokensDto, user: User) {
       pool.reserveA -= amountOut;
     }
 
+
     await this.poolRepo.save(pool);
 
     const swap = this.swapRepo.create({
@@ -69,14 +74,17 @@ async swap(dto: SwapTokensDto, user: User) {
     await this.swapRepo.save(swap);
 
 
-    // 🔁 Fee distribution logic to LPs
+    
     const tradingFee = amount * this.FEE_RATE;
     const stakes = await this.stakeRepo.find({ where: { yieldFarming: { lpTokenAddress: String(pool.id) }  }, relations: ['yieldFarming'], });
+    
     const totalStake = stakes.reduce((sum, s) => sum + s.amount, 0);
-
+   
     for (const stake of stakes) {
       const share = stake.amount / totalStake;
+    
       const feeShare = share * tradingFee;
+      
       await this.yieldFarmingService.addFeeReward(stake.id, feeShare);
     }
 
