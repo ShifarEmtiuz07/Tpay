@@ -19,6 +19,6 @@ services:
      - "3000:3000"
     env_file:
       - .env
-   # DATABASE_URL: postgres://postgres:password@db:5432/tpay_dex
+  
     depends_on:
       - db

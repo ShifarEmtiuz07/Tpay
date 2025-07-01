@@ -1,22 +1,19 @@
 
 import { Wallet } from 'ethers';
 
-
-const privateKey = '27b823f376179fefdeacff1afe777a59fc4031753f4049de8b52d0356672269c'; 
-
-
-const walletAddress = '0x6C5D1aF464097c88cECb944edB0b83A5D97AdE17';
-
-// This nonce must match the one from your backend for this wallet
- const nonce = `Login to Tpay at ${new Date().toISOString()}`; // same as what your backend stores
-
-const wallet = new Wallet(privateKey);
-
 export async function signFunc() {
-  const signature = await wallet.signMessage(nonce);
-  // console.log('Wallet Address:', walletAddress);
-  // console.log('Nonce:', nonce);
-  // console.log('Signature:', signature);
+
+  const privateKey = '1ec725c345371801f811e09f868e98c6c9683dbea15184c9bd71b07bdc8798d4'; 
+
+  const wallet = new Wallet(privateKey);
+
+
+const walletAddress = '0x0650ecDcE71157B9C73ef3eD9d9c7EaDcf8aEb94';
+  
+ const nonce = `Login to Tpay at ${new Date().toISOString()}`; 
+//  console.log('Nonce:', nonce);
+ const signature = await wallet.signMessage(nonce);
+
 
   return {
     walletAddress,

@@ -8,11 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { signFunc } from '../../../connect-metamask-account/sign-login.js'; 
-// declare global {
-//   interface Window {
-//     ethereum?: any;
-//   }
-// }
+
 
 @Injectable()
 export class AuthService {
@@ -37,7 +33,7 @@ async login(walletAddress: string) {
 try{
 
   const credential=await signFunc();
- console.log(credential);
+//  console.log(credential);
   const user = await this.userService.findByWallet(walletAddress);
   //console.log(user)
   if (!user) throw new UnauthorizedException('No user found');
@@ -58,16 +54,4 @@ try{
 }
 }
 
-//   async generateNonce(walletAddress: string) {
-//   const nonce = `Login to Tpay at ${new Date().toISOString()}`;
-
-//   let user = await this.userService.findByWallet(walletAddress);
-//   if (!user) {
-//     user = await this.userService.create({walletAddress});
-//   }
-
-//   user.nonce = nonce;
-//   await this.userRepository.save(user);
-//   return { nonce };
-// }
 }

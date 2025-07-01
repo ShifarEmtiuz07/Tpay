@@ -1,4 +1,4 @@
-# 🚀 Tpay DEX Backend
+#  Tpay DEX Backend
 
 Tpay is a **decentralized exchange (DEX)** backend built using **NestJS** and **PostgreSQL**, inspired by Uniswap v2/v3 architecture. It enables real-time token swapping, liquidity provision, yield farming, and governance — all integrated with real MetaMask accounts.
 
@@ -17,7 +17,7 @@ Tpay is a **decentralized exchange (DEX)** backend built using **NestJS** and **
 
 As this project does **not include a frontend**, I have written a **custom script** called `sign-login.js` to enable login using a **real MetaMask wallet account**.
 
-### ✅ How to Use `sign-login.js`
+###  How to Use `sign-login.js`
 
 This script signs a login nonce using your wallet’s private key (similar to how MetaMask signs messages in frontend dApps).
 
@@ -26,7 +26,7 @@ This script signs a login nonce using your wallet’s private key (similar to ho
 #### 🔧 In `sign-login.js`, change:
 1. `walletAddress` → Replace with your own MetaMask wallet address  
 2. `privateKey` → Replace with your MetaMask wallet's private key  
-   > ⚠️ **Never share your private key publicly**
+   >  **Never share your private key publicly**
 3. The script will automatically generate a nonce and signature
 
 This signed message is then used by the backend to verify your wallet and issue a JWT token.
@@ -37,7 +37,7 @@ This signed message is then used by the backend to verify your wallet and issue 
 
 To fetch real token balances or account information, I have also created a script called `link-token.js`.
 
-### ✅ How to Use `link-token.js`
+###  How to Use `link-token.js`
 
 This script uses `ethers.js` to connect to the Ethereum blockchain and retrieve token balances from a live MetaMask account.
 
@@ -261,7 +261,7 @@ src/
 
 This project includes **Docker support** to make it easy to run and deploy the backend in a containerized environment.
 
-### ✅ Features:
+###  Features:
 - Containerized NestJS application
 - PostgreSQL database support
 - Environment configuration via `.env` file
@@ -276,8 +276,8 @@ This project includes **Docker support** to make it easy to run and deploy the b
 #### 🔧 Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/tpay-dex-backend.git
-cd tpay-dex-backend
+git clone https://github.com/ShifarEmtiuz07/Tpay
+cd Tpay
 
 
 ---
@@ -327,12 +327,7 @@ You can run the Tpay DEX backend either locally (development mode) or using Dock
     docker-compose up --build
 
 
-## 📦 Future Enhancements
 
-* [ ] Token price oracles (Chainlink)
-* [ ] Multi-chain support (e.g., BSC, Polygon)
-* [ ] UI frontend for swapping/staking/voting
-* [ ] NFT-based LP positions (Uniswap v3 logic)
 
 ---
 
