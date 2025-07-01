@@ -11,7 +11,6 @@ export async function signFunc() {
 const walletAddress = '0x0650ecDcE71157B9C73ef3eD9d9c7EaDcf8aEb94';
   
  const nonce = `Login to Tpay at ${new Date().toISOString()}`; 
-//  console.log('Nonce:', nonce);
  const signature = await wallet.signMessage(nonce);
 
 
