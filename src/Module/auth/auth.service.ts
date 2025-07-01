@@ -1,5 +1,5 @@
 // src/auth/auth.service.ts
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { ethers, verifyMessage } from 'ethers';
@@ -7,7 +7,7 @@ import { UsersService } from '../users/users.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
-import { signFunc } from '../../../connect-metamask-account/sign-login.js'; // Adjust the path as needed
+import { signFunc } from '../../../connect-metamask-account/sign-login.js'; 
 // declare global {
 //   interface Window {
 //     ethereum?: any;
@@ -33,11 +33,14 @@ async validateSignature(walletAddress: string, signature: string, nonce: string)
 }
 
 async login(walletAddress: string) {
-const credential=await signFunc();
-//console.log(credential);
+
+try{
+
+  const credential=await signFunc();
+ console.log(credential);
   const user = await this.userService.findByWallet(walletAddress);
   //console.log(user)
-  if (!user) throw new UnauthorizedException('No nonce found');
+  if (!user) throw new UnauthorizedException('No user found');
 
   const isValid =verifyMessage(credential.nonce, credential.signature)
     .toLowerCase() === walletAddress.toLowerCase();
@@ -49,6 +52,10 @@ const credential=await signFunc();
 
   const token = this.jwtService.sign({ walletAddress, sub: user.id });
   return { access_token: token };
+
+}catch(error){
+  throw new InternalServerErrorException('Login error: '+error.message);
+}
 }
 
 //   async generateNonce(walletAddress: string) {

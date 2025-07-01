@@ -26,8 +26,16 @@ export class UsersService {
 
   }
 
-  findAll() {
-    return `This action returns all users`;
+ async findAll() {
+
+    try{
+      const users= await this.userRepository.find();
+      return users;
+
+    }catch(error){
+      throw new InternalServerErrorException(error.message)
+    }
+   
   }
 
  async findByWallet(walletAddress: string):Promise<User | null> {
@@ -42,11 +50,5 @@ export class UsersService {
  
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
 }

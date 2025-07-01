@@ -14,23 +14,23 @@ export class TokenManagementController {
 
   @UseGuards(AuthGuard)
   @Post()
-  async create(@Body() dto: CreateTokenDto, @Req() req: any) {
+  create(@Body() dto: CreateTokenDto, @Req() req: any) {
     //console.log('Creating token with controller:', dto);
     return this.tokenManagementService.create(dto,req.user);
   }
 
   @Get()
-  async getAll() {
+  getAll() {
     return this.tokenManagementService.findAll();
   }
 
   @Get(':id')
-  async getById(@Param('id') id: string) {
+ getById(@Param('id') id: string) {
     return this.tokenManagementService.findById(id);
   }
 
   @Get('/address')
-  async getByAddress(@Query('address') address: string) {
+   getByAddress(@Query('address') address: string) {
     return this.tokenManagementService.findByAddress(address);
   }
 }

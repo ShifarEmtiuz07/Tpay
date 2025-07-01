@@ -11,11 +11,11 @@ export class TokenSwappingController {
  @UseGuards(AuthGuard)
   @Post()
   swap(@Body() dto: SwapTokensDto, @Request() req) {
-    return this.tokenSwappingService.swap(dto, req.user);
+    return  this.tokenSwappingService.swap(dto, req.user);
   }
 
   @Get()
   getAll() {
-    return this.tokenSwappingService.getAll();
+    return  this.tokenSwappingService.getAll();
   }
 }

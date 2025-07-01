@@ -11,7 +11,7 @@ export class GovernanceController {
 
 @Post('proposal')
   create(@Body() body: CreateProposalDto) {
-    return this.governanceService.createProposal(
+    return  this.governanceService.createProposal(
       body.title,
       body.description,
       body.creatorAddress,
@@ -21,7 +21,7 @@ export class GovernanceController {
 
   @Post('vote/:proposalId')
   vote(@Param('proposalId') id: string, @Body() body: VoteDto) {
-    return this.governanceService.vote(id, body.voterAddress, body.vote, body.weight);
+    return  this.governanceService.vote(id, body.voterAddress, body.vote, body.weight);
   }
 
   @Get('proposals')

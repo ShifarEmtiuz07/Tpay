@@ -36,7 +36,8 @@ export class LiquidityPoolManagementService {
 
   async addLiquidity(dto: AddLiquidityDto, reqUser: User) {
 
-     const user = await this.userRepository.findOne({ where: { walletAddress: reqUser.walletAddress },relations:['tokens'] });
+  try{
+       const user = await this.userRepository.findOne({ where: { walletAddress: reqUser.walletAddress },relations:['tokens'] });
            
         if (!user) {
           throw new NotFoundException('User does not exists');
@@ -98,10 +99,16 @@ export class LiquidityPoolManagementService {
     });
 
     return this.liquidityRepo.save(liquidity);
+
+  }catch(error){
+    throw new InternalServerErrorException("Add liquidity error: "+error.message)
+  }
   }
 
   async removeLiquidity(dto: RemoveLiquidityDto, user: User) {
-    const pool = await this.poolRepo.findOne({ where: { id: dto.poolId } });
+  try{
+
+        const pool = await this.poolRepo.findOne({ where: { id: dto.poolId } });
     if (!pool) throw new NotFoundException('Pool not found');
 
     const liquidity = await this.liquidityRepo.findOne({
@@ -123,6 +130,10 @@ export class LiquidityPoolManagementService {
     await this.liquidityRepo.remove(liquidity);
 
     return { withdrawn: { amountA, amountB } };
+
+  }catch(error){
+    throw new InternalServerErrorException("Remove liquidity error: "+error.message);
+  }
   }
 
   async findAllPool() {

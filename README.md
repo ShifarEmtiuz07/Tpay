@@ -1,98 +1,349 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🚀 Tpay DEX Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Tpay is a **decentralized exchange (DEX)** backend built using **NestJS** and **PostgreSQL**, inspired by Uniswap v2/v3 architecture. It enables real-time token swapping, liquidity provision, yield farming, and governance — all integrated with real MetaMask accounts.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+> 🔐 **Wallet-based authentication** via MetaMask ensures a secure and passwordless user experience.
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## ✨ Features
 
-## Project setup
+### 🔐 MetaMask Wallet Authentication
 
-```bash
-$ npm install
+* Login using real MetaMask wallet (via ECDSA signature)
+* Nonce-based challenge-response flow
+* No passwords — only wallet signature required
+* Stores real wallet addresses in DB
+
+As this project does **not include a frontend**, I have written a **custom script** called `sign-login.js` to enable login using a **real MetaMask wallet account**.
+
+### ✅ How to Use `sign-login.js`
+
+This script signs a login nonce using your wallet’s private key (similar to how MetaMask signs messages in frontend dApps).
+
+> **Before running the script, please update the following:**
+
+#### 🔧 In `sign-login.js`, change:
+1. `walletAddress` → Replace with your own MetaMask wallet address  
+2. `privateKey` → Replace with your MetaMask wallet's private key  
+   > ⚠️ **Never share your private key publicly**
+3. The script will automatically generate a nonce and signature
+
+This signed message is then used by the backend to verify your wallet and issue a JWT token.
+
+---
+
+## 🔗 Fetching Real Token Balance from MetaMask Wallet
+
+To fetch real token balances or account information, I have also created a script called `link-token.js`.
+
+### ✅ How to Use `link-token.js`
+
+This script uses `ethers.js` to connect to the Ethereum blockchain and retrieve token balances from a live MetaMask account.
+
+> **Before running the script, please update the following:**
+
+#### 🔧 In `link-token.js`, change:
+1. `tokenAddress` → Replace with the token's contract address from [https://etherscan.io/](https://etherscan.io/)  
+2. `walletAddress` → Replace with your own MetaMask wallet address  
+3. `RPC_URL` → Replace with your **Infura API URL** or any Ethereum RPC endpoint (e.g., Alchemy)
+
+The script will output the **token name** and your **wallet’s balance** in a readable format.
+
+
+### 💱 Token Swapping
+
+* AMM model (x \* y = k) based on Uniswap v2
+* 0.3% trading fee per swap
+* Fully tracked swap history
+* Fee distribution to liquidity providers
+
+### 🏦 Liquidity Pool Management
+
+* Create token pairs (tokenA/tokenB)
+* Add/remove liquidity
+* Earn LP shares and trading fees
+
+### 🧑‍🌾 Yield Farming
+
+* Stake LP tokens to earn TPAY rewards
+* Claim time-based token rewards (`rewardRate`)
+* Claim swap trading fee rewards (`feeReward`)
+* Real-time farming stats
+
+### 🗳️ Governance
+
+* Create governance proposals
+* Vote using weighted power (LP/tokens)
+* View proposal history and results
+
+---
+
+## 🔗 MetaMask Integration
+
+This backend is connected with **real MetaMask wallets**:
+
+* Authenticate using signature from `window.ethereum`
+* Extract wallet address with `ethers.utils.verifyMessage`
+* Fetch and store user identity from wallet
+* Designed to work seamlessly with any frontend dApp
+
+---
+
+## 🔧 Technologies
+
+* **NestJS** – Progressive Node.js framework
+* **PostgreSQL** – Relational database
+* **TypeORM** – Database ORM
+* **Ethers.js** – MetaMask integration
+* **JWT** – Authentication
+* **Docker** – Containerization-ready
+
+---
+
+## 🛠 API Documentation
+
+### 🔐 Auth
+
+| Method | Route                  | Description              |
+| ------ | ---------------------- | ------------------------ |
+| POST   | `/auth/wallet-login`   | Login using signed nonce |
+
+**Payload:**
+
+```json
+{
+ "walletAddress":""
+}
 ```
 
-## Compile and run the project
+### 💱 Swap
 
-```bash
-# development
-$ npm run start
+| Method | Route             | Description    |
+| ------ | ----------------- | -------------- |
+| POST   | `/token-swapping` | Swap tokens    |
+| GET    | `/token-swapping` | View all swaps |
 
-# watch mode
-$ npm run start:dev
+**Payload:**
 
-# production mode
-$ npm run start:prod
+```json
+{
+  "poolId": 1,
+  "fromToken": "USDT",
+  "amount": 100
+}
 ```
 
-## Run tests
+### 🏦 Liquidity Pools
 
-```bash
-# unit tests
-$ npm run test
+| Method | Route                         | Description                 |
+| ------ | ----------------------------- | --------------------------- |
+| POST   | `/liquidity-pool`             | Create a new liquidity pool |
+| POST   | `liquidity-pool/add`          | Add liquidity to a pool     |
+| POST   | `liquidity-pool/remove`       | Remove liquidity from pool  |
+| GET    | `/liquidity-pool/all-pools`   | Get all pools               |
+| GET    |`liquidity-pool/all-liquidities`| Get all liquidities        |
 
-# e2e tests
-$ npm run test:e2e
+**Payload (create pool):**
 
-# test coverage
-$ npm run test:cov
+```json
+{
+  "tokenA": "USDT",
+  "tokenB": "ETH",
+  "reserveA": 10000,
+  "reserveB": 5
+}
 ```
 
-## Deployment
+**Payload (add liquidity):**
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+```json
+{
+  "poolId":1,
+  "amountA": 500,
+  "amountB": 0.25
+}
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+**Payload (remove liquidity):**
 
-## Resources
+```json
+{
+   "poolId": 3,
+   "share": 10
+}
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+### 🧑‍🌾 Yield Farming
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+| Method | Route                           | Description                              |
+| ------ | ------------------------------- | ---------------------------------------- |
+| POST   | `/yield-farming/farm`           | Create a new yield farm                  |
+| GET    | `/yield-farming/farms`          | List all yield farms                     |
+| POST   | `/yield-farming/stake/:farmId`  | Stake LP tokens to earn TPAY             |
+| POST   | `/yield-farming/claim/:stakeId` | Claim TPAY rewards + trading fee rewards |
 
-## Support
+**Payload (create farm):**
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```json
+{
+  "name": "USDT-ETH Farm",
+  "lpTokenAddress": "1",   //Pool Id
+  "rewardRate": 0.0001
+}
+```
 
-## Stay in touch
+**Payload (stake):**
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```json
+{
+  "amount": 100
+}
+```
 
-## License
+**Response (claim):**
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```json
+{
+  "tpayReward": 0.024,
+  "tradingFeeReward": 0.0037
+}
+```
+
+### 🗳️ Governance
+
+| Method | Route                          | Description           |
+| ------ | ------------------------------ | --------------------- |
+| POST   | `/governance/proposal`         | Create a new proposal |
+| POST   | `/governance/vote/:proposalId` | Vote on a proposal    |
+| GET    | `/governance/proposals`        | Get all proposals     |
+
+**Payload (create proposal):**
+
+```json
+{
+  "title": "Reduce Swap Fee",
+  "description": "Change the swap fee from 0.3% to 0.2%",
+  "creatorAddress": "0x1234abcd5678ef901234567890abcdef12345678",
+  "deadline": "2025-07-30T23:59:59Z"
+}
+```
+
+**Payload (vote):**
+
+```json
+{
+  "voterAddress": "0x1234abcd5678ef901234567890abcdef12345678",
+  "vote": "yes",
+  "weight": 100
+}
+```
+
+---
+
+## 📁 Folder Structure
+
+```
+src/
+├── auth/                         → MetaMask-based login
+├── liquidity-pool-management/    → Liquidity pool management
+├── token-swapping/               → Token swaps + fee handling
+├── yield-farming/                → Staking & reward system
+├── governance/                   → Proposal creation & voting
+├── users/                        → User info (wallet-based)
+├── token-management/             → Manage token
+
+```
+
+---
+
+## 🐳 Docker Support
+
+This project includes **Docker support** to make it easy to run and deploy the backend in a containerized environment.
+
+### ✅ Features:
+- Containerized NestJS application
+- PostgreSQL database support
+- Environment configuration via `.env` file
+- Easy setup using `docker-compose`
+
+---
+
+### 🧱 Build and Run the Project with Docker
+
+> Make sure Docker and Docker Compose are installed on your machine.
+
+#### 🔧 Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/your-username/tpay-dex-backend.git
+cd tpay-dex-backend
+
+
+---
+
+#### Configure Environment Variables
+
+  > Create a .env file in the project root and add:
+
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=yourpassword
+      - DB_NAME=tpay  #  DB_NAME=db for docker
+      - JWT_SECRET=your_jwt_secret
+
+
+## ▶️ How to Run the Project
+
+You can run the Tpay DEX backend either locally (development mode) or using Docker (isolated environment).
+
+---
+
+### 🧪 Local Development Setup
+
+#### 🔹 Prerequisites
+
+- Node.js (v22.17.0 recommended)
+- PostgreSQL (installed locally or through a service like Docker)
+- Npm
+- .env file configured
+
+#### 🔹 Install Dependencies
+
+  ```bash
+  npm install
+  # or
+  yarn install
+
+🔹 Run the App
+
+    npm run start:dev
+    # or
+    yarn start:dev
+
+🔹 Start with Docker
+
+    docker-compose up --build
+
+
+## 📦 Future Enhancements
+
+* [ ] Token price oracles (Chainlink)
+* [ ] Multi-chain support (e.g., BSC, Polygon)
+* [ ] UI frontend for swapping/staking/voting
+* [ ] NFT-based LP positions (Uniswap v3 logic)
+
+---
+
+## 🧠 Disclaimer
+
+This project is for educational and prototyping purposes.
+**Do not deploy on mainnet without security audits.**
+
+---
+
+## 👨‍💻 Author
+
+Made with ❤️ by \[A. B. M. Shifar Emtiuz]
+Contributions & forks are welcome!

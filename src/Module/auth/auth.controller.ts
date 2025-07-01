@@ -9,7 +9,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('wallet-login')
-  async walletLogin(@Body() dto: CreateAuthDto) {
+   walletLogin(@Body() dto: CreateAuthDto) {
     return this.authService.login(dto.walletAddress);
   }
 

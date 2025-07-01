@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 
 import { UpdateTokenSwappingDto } from './dto/update-token-swapping.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -24,7 +24,9 @@ export class TokenSwappingService {
   ) {}
 
 async swap(dto: SwapTokensDto, reqUser: User) {
-    const { poolId, fromToken, amount } = dto;
+try{
+
+      const { poolId, fromToken, amount } = dto;
 
     const pool = await this.poolRepo.findOne({ where: { id: poolId } });
     if (!pool) throw new NotFoundException('Pool not found');
@@ -96,9 +98,13 @@ async swap(dto: SwapTokensDto, reqUser: User) {
       output: amountOut,
       fee: this.FEE_RATE * 100 + '%',
     };
+
+}catch(error){
+  throw new InternalServerErrorException("Toking swaping error: "+error.message);
+}
   }
 
   async getAll() {
-    return this.swapRepo.find({ relations: ['pool', 'user'] });
+    return await this.swapRepo.find({ relations: ['pool', 'user'] });
   }
 }
